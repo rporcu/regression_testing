@@ -790,12 +790,7 @@ def report_this_test_run(suite, make_benchmarks, note, update_time,
 
         for k, r in suite.repos.items():
             if r.update:
-                if r.pr_wanted is not None:
-                    branch = "PR #{}".format(r.pr_wanted)
-                else:
-                    branch = r.branch_wanted
-
-                hf.write(code_str.format(r.name, branch, r.hash_current,
+                hf.write(code_str.format(r.name, r.branch_wanted, r.hash_current,
                                          "ChangeLog.{}".format(r.name),
                                          "ChangeLog.{}".format(r.name)))
 
@@ -809,11 +804,11 @@ def report_this_test_run(suite, make_benchmarks, note, update_time,
     # summary table
     if make_benchmarks is None:
         special_cols = []
-        if suite.summary_job_info_field1 is not "":
+        if suite.summary_job_info_field1 != "":
             special_cols.append(suite.summary_job_info_field1)
-        if suite.summary_job_info_field2 is not "":
+        if suite.summary_job_info_field2 != "":
             special_cols.append(suite.summary_job_info_field2)
-        if suite.summary_job_info_field3 is not "":
+        if suite.summary_job_info_field3 != "":
             special_cols.append(suite.summary_job_info_field3)
 
         cols = ["test name", "dim", "compare plotfile",
@@ -906,15 +901,15 @@ def report_this_test_run(suite, make_benchmarks, note, update_time,
 
 
             # special columns
-            if suite.summary_job_info_field1 is not "":
+            if suite.summary_job_info_field1 != "":
                 row_info.append("<div class='small'>{}</div>".format(
                     test.job_info_field1))
 
-            if suite.summary_job_info_field2 is not "":
+            if suite.summary_job_info_field2 != "":
                 row_info.append("<div class='small'>{}</div>".format(
                     test.job_info_field2))
 
-            if suite.summary_job_info_field3 is not "":
+            if suite.summary_job_info_field3 != "":
                 row_info.append("<div class='small'>{}</div>".format(
                     test.job_info_field3))
 
@@ -1053,16 +1048,21 @@ def report_all_runs(suite, active_test_list):
 
     hf.write("<P><TABLE class='maintable'>\n")
 
+    hf.write("<TR>\n")
     # write out the header
-    hf.write("<TR><TH ALIGN=CENTER>date</TH>\n")
+    for k, r in suite.repos.items():
+        hf.write("<TH ALIGN=CENTER colspan='2'>%s</TH>\n" % r.name)
+    hf.write("<TH ALIGN=CENTER>date</TH>\n")
     for test in all_tests:
         hf.write("<TH><div class='verticaltext'>%s</div></TH>\n" % (test))
-
     hf.write("</TR>\n")
 
-
+    hf.write("<TR>\n")
+    for k, r in suite.repos.items():
+        hf.write("<TD ALIGN=CENTER>branch</TD>\n")
+        hf.write("<TD ALIGN=CENTER>hash</TD>\n")
     if suite.do_timings_plots:
-        hf.write("<tr><td class='date'>plots</td>")
+        hf.write("<td ALIGN=CENTER class='date'>plots</td>")
         for t in all_tests:
             plot_file = "{}-timings.{}".format(t, suite.plot_ext)
             if os.path.isfile(plot_file):
@@ -1070,7 +1070,7 @@ def report_all_runs(suite, active_test_list):
             else:
                 hf.write("<TD ALIGN=CENTER><H3>&nbsp;</H3></TD>\n")
 
-        hf.write("</TR>\n")
+    hf.write("</TR>\n")
 
     # loop over all the test runs
     for tdir in valid_dirs:
@@ -1094,8 +1094,13 @@ def report_all_runs(suite, active_test_list):
             branch_mark = r"&lowast;"
             bf.close()
 
+        hf.write("<TR>\n")
+        for k, r in suite.repos.items():
+            hf.write("<td ALIGN=CENTER>%s</td>\n" % r.branch_wanted)
+            hf.write("<td ALIGN=CENTER>%s</td>\n" % r.hash_current[:8])
+
         # write out the directory (date)
-        hf.write("<TR><TD class='date'><SPAN CLASS='nobreak'><A class='main' HREF=\"{}/index.html\">{}&nbsp;</A>{}</SPAN></TD>\n".format(tdir, tdir, branch_mark) )
+        hf.write("<TD class='date'><SPAN CLASS='nobreak'><A class='main' HREF=\"{}/index.html\">{}&nbsp;</A>{}</SPAN></TD>\n".format(tdir, tdir, branch_mark) )
 
         for test in all_tests:
 

@@ -420,8 +420,8 @@ def test_suite(argv):
         suite.log.bold("repo: {}".format(suite.repos[k].name))
         suite.log.indent()
 
-        if suite.repos[k].update or suite.repos[k].hash_wanted:
-            suite.repos[k].git_update()
+        #if suite.repos[k].update or suite.repos[k].hash_wanted:
+        #    suite.repos[k].git_update()
 
         suite.repos[k].save_head()
 
@@ -704,6 +704,7 @@ def test_suite(argv):
             suite.log.log("restarting from {} ... ".format(restart_file))
 
             if suite.sourceTree == "C_Src" or test.testSrcTree == "C_Src":
+
                 base_cmd = "./{} {} {}={}_plt amr.check_file={}_chk amr.checkpoint_files_output=0 amr.restart={} {} {}".format(
                     executable, test.inputFile, suite.plot_file_name, test.name, test.name, restart_file,
                     suite.globalAddToExecString, test.runtime_params)
@@ -891,7 +892,6 @@ def test_suite(argv):
                             shutil.rmtree("{}/{}".format(bench_dir, compare_file))
                         except:
                             pass
-
                         shutil.copytree(source_file, "{}/{}".format(bench_dir, compare_file))
 
                     with open("{}.status".format(test.name), 'w') as cf:
@@ -1196,16 +1196,16 @@ def test_suite(argv):
         if os.path.isfile(current_file):
             os.chmod(current_file, 0o644)
 
-    # reset the branch to what it was originally
-    suite.log.skip()
-    suite.log.bold("reverting git branches/hashes")
-    suite.log.indent()
-
-    for k in suite.repos:
-        if suite.repos[k].update or suite.repos[k].hash_wanted:
-            suite.repos[k].git_back()
-
-    suite.log.outdent()
+    ## reset the branch to what it was originally
+    #suite.log.skip()
+    #suite.log.bold("reverting git branches/hashes")
+    #suite.log.indent()
+    #
+    #for k in suite.repos:
+    #    if suite.repos[k].update or suite.repos[k].hash_wanted:
+    #        suite.repos[k].git_back()
+    #
+    #suite.log.outdent()
 
     # For temporary run, return now without creating suite report.
     if args.do_temp_run:
